@@ -14,7 +14,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
     <script type="text/babel">
         const connectSocket = (e) => {
-            var message = document.querySelector("#message");
             var chat = document.querySelector("#chat");
             var socket = io.connect();
             
@@ -28,6 +27,11 @@
                 }
                 
                 socket.emit('join', {name: user});
+                
+                document.querySelector("#username").setAttribute("readOnly", "true");
+                document.querySelector("#connect").style.display = "none";
+                document.querySelector("#disconnect").style.display = "inline";
+                
             });
             
             socket.on('msg', (data) => {
@@ -36,16 +40,26 @@
                 chat.innerHTML += data.name + ": " + data.msg + "\n";
             });
             
-            document.querySelector("#send").addEventListener('click', () => {
-                console.log(message.value);
-                socket.emit('msgToServer', {msg: message.value});
-            });
         };
-
         
         const init = () => {
             const connect = document.querySelector("#connect");
             connect.addEventListener('click', connectSocket); 
+            var message = document.querySelector("#message");
+            
+            document.querySelector("#send").addEventListener('click', () => {
+                console.log(message.value);
+                socket.emit('msgToServer', {msg: message.value});
+                message.value = "";
+            });
+            
+            document.querySelector("#disconnect").addEventListener('click', () = > {
+                socket.emit('disconnect', {name: user});
+                document.querySelector("#chat").innerHTML = "";
+                document.querySelector("#username").setAttribute("readOnly", "false");
+                document.querySelector("#connect").style.display = "inline";
+                document.querySelector("#disconnect").style.display = "none";
+            });
             
         };
         window.onload = init;
@@ -55,12 +69,16 @@
 			display: block;
 			background-color: #EEEEEE;
 		}
+        #disconnect {
+            display: none;
+        }
 	</style>
 </head>
 <body>
 	<label for="user">Username:</label>
 	<input id="username" name="user" type="text"/>
 	<input id="connect" type='button' value='connect'/>
+    <input id="disconnect" type='button' value='disconnect'/>
 	</br>
 	<label for="message">Message:</label>
 	<input id="message" name="message" type="text"/>
