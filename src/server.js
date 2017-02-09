@@ -57,21 +57,22 @@ const onMsg = (sock) => {
 };
 
 const onDisconnect = (sock) => {
-    const socket = sock;
+  const socket = sock;
+
+  socket.on('disconnect', (data) => {
+    const leaveMessage = {
+      name: 'server',
+      msg: `${data.name} has left the room`,
+    };
+
+    delete users[data.name];
+
+    socket.leave('room1');
     
-    socket.on('disconnect', (data) => {
-        const leaveMessage = {
-            name: 'server',
-            msg : `${data.name} has left the room`,
-        };
-        
-        delete users[data.name];
-        
-        socket.broadcast.to('room1').emit('msg',response);
-        
-        console.log(`${data.name} left`);
-        
-    });
+    socket.broadcast.to('room1').emit('msg', leaveMessage);
+
+    console.log(`${data.name} left`);
+  });
 };
 
 io.sockets.on('connection', (socket) => {
