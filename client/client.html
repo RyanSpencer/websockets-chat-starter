@@ -13,17 +13,18 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
     <script type="text/babel">
-
-        const disconnect = (user, socket) => {
-            socket.emit('disconnect', {name: user});
+    let socket;
+        const disconnect = () => {
+            socket.disconnect();
             document.querySelector("#chat").innerHTML = "";
             document.querySelector("#username").setAttribute("readOnly", "false");
             document.querySelector("#connect").style.display = "inline";
             document.querySelector("#disconnect").style.display = "none";
+                        
         };
 
-        const send = (socket) => {
-            var message = document.querySelector("#message");
+        const send = () => {
+            const message = document.querySelector("#message");
             console.log(message.value);
             socket.emit('msgToServer', {msg: message.value});
             message.value = "";
@@ -31,8 +32,8 @@
         };
 
         const connectSocket = (e) => {
-            var chat = document.querySelector("#chat");
-            var socket = io.connect();
+            const chat = document.querySelector("#chat");
+            socket = io.connect();
             
             socket.on('connect', () => {
                 console.log('connecting');
@@ -48,13 +49,11 @@
                 document.querySelector("#username").setAttribute("readOnly", "true");
                 document.querySelector("#connect").style.display = "none";
                 document.querySelector("#disconnect").style.display = "inline";
-                
-                
-                document.querySelector("#disconnect").addEventListener('click', () => {disconnect(user, socket)});
-                
-                document.querySelector("#send").addEventListener('click', () => {send(socket)});
-                
-                console.log('aaahhhhh');
+
+                //document.querySelector("#disconnect").addEventListener('click', () => {disconnect(user, socket)});
+                document.querySelector("#disconnect").onclick = disconnect;
+                //document.querySelector("#send").addEventListener('click', () => {send(socket)});
+                document.querySelector('#send').onclick = send;
                 
             });
             

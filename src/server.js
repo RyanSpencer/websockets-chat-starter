@@ -29,9 +29,9 @@ const onJoined = (sock) => {
       msg: `There are ${Object.keys(users).length} users online`,
     };
 
-    users[data.name] = data;
-
     socket.name = data.name;
+    users[socket.name] = socket.name;
+      
     socket.emit('msg', joinMsg);
 
     socket.join('room1');
@@ -62,16 +62,15 @@ const onDisconnect = (sock) => {
   socket.on('disconnect', (data) => {
     const leaveMessage = {
       name: 'server',
-      msg: `${data.name} has left the room`,
+      msg: `${socket.name} has left the room`,
     };
 
-    delete users[data.name];
-
-    socket.leave('room1');
-    
     socket.broadcast.to('room1').emit('msg', leaveMessage);
 
-    console.log(`${data.name} left`);
+    console.log(`${socket.name} left`);
+    socket.leave('room1');
+
+    delete users[socket.name];
   });
 };
 
