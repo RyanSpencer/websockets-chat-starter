@@ -20,6 +20,21 @@ const io = socketio(app);
 
 const users = {};
 
+// Taken from stackoverflow
+// http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
+const randomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+    if (color == "#FF0000") {
+        color = '#';
+        i = 0;
+    }
+  }
+  return color;
+};
+
 const onJoined = (sock) => {
   const socket = sock;
 
@@ -27,11 +42,12 @@ const onJoined = (sock) => {
     const joinMsg = {
       name: 'server',
       msg: `There are ${Object.keys(users).length} users online`,
+      color: '#FF0000',
     };
 
     socket.name = data.name;
-    users[socket.name] = socket.name;
-      
+    users[socket.name] = { name: socket.name, color: randomColor() };
+
     socket.emit('msg', joinMsg);
 
     socket.join('room1');
@@ -39,12 +55,13 @@ const onJoined = (sock) => {
     const response = {
       name: 'server',
       msg: `${data.name} has joined the room`,
+      color: '#FF0000',
     };
     socket.broadcast.to('room1').emit('msg', response);
 
     console.log(`${data.name} joined`);
 
-    socket.emit('msg', { name: 'server', msg: 'You joined the room' });
+    socket.emit('msg', { name: 'server', msg: 'You joined the room', color: '#FF0000' });
   });
 };
 
@@ -52,7 +69,7 @@ const onMsg = (sock) => {
   const socket = sock;
 
   socket.on('msgToServer', (data) => {
-    io.sockets.in('room1').emit('msg', { name: socket.name, msg: data.msg });
+    io.sockets.in('room1').emit('msg', { name: socket.name, msg: data.msg, color: users[socket.name].color });
   });
 };
 
@@ -63,6 +80,7 @@ const onDisconnect = (sock) => {
     const leaveMessage = {
       name: 'server',
       msg: `${socket.name} has left the room`,
+      color: '#FF0000',
     };
 
     socket.broadcast.to('room1').emit('msg', leaveMessage);

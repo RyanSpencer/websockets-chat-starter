@@ -14,6 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
     <script type="text/babel">
     let socket;
+    
         const disconnect = () => {
             socket.disconnect();
             document.querySelector("#chat").innerHTML = "";
@@ -50,17 +51,15 @@
                 document.querySelector("#connect").style.display = "none";
                 document.querySelector("#disconnect").style.display = "inline";
 
-                //document.querySelector("#disconnect").addEventListener('click', () => {disconnect(user, socket)});
                 document.querySelector("#disconnect").onclick = disconnect;
-                //document.querySelector("#send").addEventListener('click', () => {send(socket)});
                 document.querySelector('#send').onclick = send;
                 
             });
             
             socket.on('msg', (data) => {
                 console.log(data);
-                
-                chat.innerHTML += data.name + ": " + data.msg + "\n";
+                chat.innerHTML += "<p><span style='color: " + data.color + "' >" + data.name + "</span>: " + data.msg + "</p>";
+                chat.scrollTop = chat.scrollHeight;
             });
             
             
@@ -73,12 +72,20 @@
         window.onload = init;
     </script>
 	<style>
-		textarea {
+		#chat {
 			display: block;
 			background-color: #EEEEEE;
+            width: 500px;
+            height: 500px;
+            overflow-y: auto;
+            overflow-x: scroll;
 		}
         #disconnect {
             display: none;
+        }
+        p {
+            margin: 0;
+            padding: 0;
         }
 	</style>
 </head>
@@ -87,11 +94,11 @@
 	<input id="username" name="user" type="text"/>
 	<input id="connect" type='button' value='connect'/>
     <input id="disconnect" type='button' value='disconnect'/>
-	</br>
+	<br>
 	<label for="message">Message:</label>
 	<input id="message" name="message" type="text"/>
 	<input id="send" type="button" value="send" />
 	
-	<textarea id="chat" rows="20" cols="40" readonly></textarea>
+    <div id="chat"></div>
 </body>
 </html>
