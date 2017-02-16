@@ -27,9 +27,9 @@ const randomColor = () => {
   let color = '#';
   for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)];
-    if (color == "#FF0000") {
-        color = '#';
-        i = 0;
+    if (color === '#FF0000') {
+      color = '#';
+      i = 0;
     }
   }
   return color;
@@ -69,14 +69,13 @@ const onMsg = (sock) => {
   const socket = sock;
 
   socket.on('msgToServer', (data) => {
-    if (data.msg.charAt(0) == '/') {
-        if (data.msg == "/bikeshed") {
-            io.sockets.in('room1').emit('msg', {name: socket.name, msg: data.msg, color: randomColor()});
-        }
-    }
-      else {
-          io.sockets.in('room1').emit('msg', { name: socket.name, msg: data.msg, color: users[socket.name].color });
+    if (data.msg.charAt(0) === '/') {
+      if (data.msg === '/bikeshed') {
+        io.sockets.in('room1').emit('msg', { name: socket.name, msg: data.msg, color: randomColor() });
       }
+    } else {
+      io.sockets.in('room1').emit('msg', { name: socket.name, msg: data.msg, color: users[socket.name].color });
+    }
   });
 };
 
