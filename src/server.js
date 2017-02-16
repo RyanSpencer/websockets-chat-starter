@@ -46,6 +46,11 @@ const onJoined = (sock) => {
     };
 
     socket.name = data.name;
+    for (let i = 0; i < Object.keys(users).length; i++) {
+      if (users[i] === socket.name) {
+        socket.name += Object.keys(users).length;
+      }
+    }
     users[socket.name] = { name: socket.name, color: randomColor() };
 
     socket.emit('msg', joinMsg);
@@ -83,9 +88,10 @@ const onDisconnect = (sock) => {
   const socket = sock;
 
   socket.on('disconnect', (data) => {
+    console.log(data);
     const leaveMessage = {
       name: 'server',
-      msg: `${data.name} has left the room`,
+      msg: `${socket.name} has left the room`,
       color: '#FF0000',
     };
 
