@@ -69,7 +69,14 @@ const onMsg = (sock) => {
   const socket = sock;
 
   socket.on('msgToServer', (data) => {
-    io.sockets.in('room1').emit('msg', { name: socket.name, msg: data.msg, color: users[socket.name].color });
+    if (data.msg.charAt(0) == '/') {
+        if (data.msg == "/bikeshed") {
+            io.sockets.in('room1').emit('msg', {name: socket.name, msg: data.msg, color: randomColor()});
+        }
+    }
+      else {
+          io.sockets.in('room1').emit('msg', { name: socket.name, msg: data.msg, color: users[socket.name].color });
+      }
   });
 };
 
@@ -79,7 +86,7 @@ const onDisconnect = (sock) => {
   socket.on('disconnect', (data) => {
     const leaveMessage = {
       name: 'server',
-      msg: `${socket.name} has left the room`,
+      msg: `${data.name} has left the room`,
       color: '#FF0000',
     };
 

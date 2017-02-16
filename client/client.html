@@ -18,7 +18,7 @@
         const disconnect = () => {
             socket.disconnect();
             document.querySelector("#chat").innerHTML = "";
-            document.querySelector("#username").setAttribute("readOnly", "false");
+            document.querySelector("#username").removeAttribute("readOnly");
             document.querySelector("#connect").style.display = "inline";
             document.querySelector("#disconnect").style.display = "none";
                         
@@ -58,7 +58,12 @@
             
             socket.on('msg', (data) => {
                 console.log(data);
-                chat.innerHTML += "<p><span style='color: " + data.color + "' >" + data.name + "</span>: " + data.msg + "</p>";
+                if (data.msg == "/bikeshed") {
+                    chat.style.background = data.color;
+                }
+                else {
+                     chat.innerHTML += "<p><span style='color: " + data.color + "' >" + data.name + "</span>: " + data.msg + "</p>";
+                }
                 chat.scrollTop = chat.scrollHeight;
             });
             
