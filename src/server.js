@@ -47,7 +47,7 @@ const onJoined = (sock) => {
 
     socket.name = data.name;
     for (let i = 0; i < Object.keys(users).length; i++) {
-      if (users[i] === socket.name) {
+      if (users[socket.name]) {
         socket.name += Object.keys(users).length;
       }
     }
